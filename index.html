@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>阿柠小破站</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6366F1', // 靛蓝色作为主色调
+            secondary: '#EC4899', // 粉色作为辅助色
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Poppins', 'system-ui', 'sans-serif']
+          },
+        },
+      }
+    }
+  </script>
+
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+      .gradient-bg {
+        background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+      }
+      .glass-effect {
+        @apply bg-white/10 backdrop-blur-md border border-white/20;
+      }
+    }
+
+
+    /* 在现有的<style type="text/tailwindcss">中添加以下样式 */
+  
+  /* 添加视频容器样式 */
+  .video-container {
+    @apply relative overflow-hidden bg-gray-900;
+  }
+  .video-content {
+    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-auto max-h-full;
+  }
+
+
+
+  html {
+  scroll-behavior: smooth;
+}
+  </style>
+
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+</head>
+
+<body class="bg-gray-50 text-dark font-sans overflow-x-hidden">
+  <!-- 导航栏 -->
+  <header class="fixed w-full top-0 z-50 transition-all duration-300" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between glass-effect rounded-b-xl mx-4 mt-2">
+      <a href="#" class="flex items-center space-x-2">
+        <div class="w-10 h-10 rounded-lg gradient-bg flex items-center justify-center">
+          <i class="fa fa-cube text-white text-xl"></i>
+        </div>
+        <span class="text-xl font-display font-bold">阿柠小破站</span>
+      </a>
+
+      <!-- 桌面导航 -->
+      <nav class="hidden md:flex items-center space-x-8">
+        <a href="#features" class="font-medium hover:text-primary transition-colors">特性</a>
+        <a href="#gallery" class="font-medium hover:text-primary transition-colors">展示</a>
+        <a href="#videos" class="font-medium hover:text-primary transition-colors">视频</a>
+        <a href="#contact" class="font-medium hover:text-primary transition-colors">联系我们</a>
+      </nav>
+
+      <div class="flex items-center space-x-4">
+        <a href="#"
+          class="hidden md:inline-block px-5 py-2 rounded-full border border-primary text-primary hover:bg-primary/5 transition-colors">登录</a>
+        <a href="#"
+          class="px-5 py-2 rounded-full gradient-bg text-white hover:shadow-lg hover:shadow-primary/20 transition-all">开始使用</a>
+
+        <!-- 移动端菜单按钮 -->
+        <button class="md:hidden text-2xl" id="menu-toggle">
+          <i class="fa fa-bars"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 移动端菜单 -->
+    <div class="md:hidden hidden glass-effect absolute w-full mt-2 rounded-b-xl" id="mobile-menu">
+      <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+        <a href="#features" class="font-medium py-2 hover:text-primary transition-colors">特性</a>
+        <a href="#gallery" class="font-medium py-2 hover:text-primary transition-colors">展示</a>
+        <a href="#pricing" class="font-medium py-2 hover:text-primary transition-colors">价格</a>
+        <a href="#contact" class="font-medium py-2 hover:text-primary transition-colors">联系我们</a>
+        <a href="#" class="font-medium py-2 text-primary transition-colors">登录</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 英雄区域 -->
+  <section class="pt-32 pb-20 md:pt-40 md:pb-32 relative overflow-hidden">
+    <!-- 背景装饰 -->
+    <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/5 to-transparent -z-10"></div>
+    <div class="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-secondary/10 -z-10"></div>
+
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row items-center">
+        <div class="md:w-1/2 mb-12 md:mb-0">
+          <span class="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">全新体验 ·
+            重新定义</span>
+          <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-display font-bold leading-tight mb-6">
+            二战<span class="text-primary">王牌飞行员</span>世界
+          </h1>
+          <p class="text-lg text-gray-600 mb-8 max-w-lg">
+            突破传统界限，融合创新科技与优雅设计，为您带来前所未有的使用体验。
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <a href="#"
+              class="px-8 py-3.5 rounded-full gradient-bg text-white font-medium text-center hover:shadow-xl hover:shadow-primary/20 transition-all">
+              立即体验
+            </a>
+            <a href="#"
+              class="px-8 py-3.5 rounded-full border border-gray-300 text-center font-medium hover:border-primary hover:text-primary transition-all">
+              了解更多 <i class="fa fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+
+          <div class="mt-12 flex items-center">
+            <div class="flex -space-x-2">
+              <img src="https://picsum.photos/id/1001/100/100" alt="用户头像"
+                class="w-10 h-10 rounded-full border-2 border-white">
+              <img src="https://picsum.photos/id/1002/100/100" alt="用户头像"
+                class="w-10 h-10 rounded-full border-2 border-white">
+              <img src="https://picsum.photos/id/1003/100/100" alt="用户头像"
+                class="w-10 h-10 rounded-full border-2 border-white">
+              <img src="https://picsum.photos/id/1004/100/100" alt="用户头像"
+                class="w-10 h-10 rounded-full border-2 border-white">
+              <div
+                class="w-10 h-10 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-xs font-medium">
+                2k+
+              </div>
+            </div>
+            <div class="ml-4">
+              <div class="flex items-center text-yellow-400">
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star-half-o"></i>
+                <span class="ml-2 text-gray-700 font-medium">4.8/5</span>
+              </div>
+              <p class="text-sm text-gray-500">来自2,000+位用户的评价</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:w-1/2 relative">
+          <div
+            class="relative z-10 rounded-2xl overflow-hidden shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-500">
+            <img src="./imgs/01.jpg" alt="主视觉展示" class="w-full h-auto">
+          </div>
+          <!-- 装饰元素 -->
+          <div class="absolute -top-6 -left-6 w-32 h-32 bg-secondary/20 rounded-full -z-10"></div>
+          <div class="absolute -bottom-8 -right-8 w-40 h-40 bg-primary/20 rounded-full -z-10"></div>
+
+          <!-- 悬浮卡片 -->
+          <div
+            class="absolute top-1/4 -left-12 md:left-auto md:-right-12 glass-effect p-4 rounded-xl shadow-lg max-w-[180px]">
+            <div class="flex items-center space-x-3 mb-2">
+              <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                <i class="fa fa-line-chart"></i>
+              </div>
+              <div>
+                <p class="text-sm font-medium">增长趋势</p>
+                <p class="text-xs text-gray-500">持续上升</p>
+              </div>
+            </div>
+            <div class="w-full h-16">
+              <canvas id="miniChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 品牌展示 -->
+  <section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <p class="text-center text-gray-500 mb-8">受到全球领先企业的信任</p>
+      <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-70">
+        <div class="text-2xl font-bold text-gray-400">Google</div>
+        <div class="text-2xl font-bold text-gray-400">Microsoft</div>
+        <div class="text-2xl font-bold text-gray-400">Airbnb</div>
+        <div class="text-2xl font-bold text-gray-400">Spotify</div>
+        <div class="text-2xl font-bold text-gray-400">Netflix</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 特性区域 -->
+  <section id="features" class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span
+          class="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">核心特性</span>
+        <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-display font-bold mb-6">重新定义您的使用体验</h2>
+        <p class="text-lg text-gray-600">
+          我们精心打造每一个细节，只为提供卓越的产品体验和强大的功能支持。
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- 特性卡片1 -->
+        <div class="p-8 rounded-2xl bg-gray-50 card-hover">
+          <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+            <i class="fa fa-bolt"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3">极速响应</h3>
+          <p class="text-gray-600 mb-4">
+            优化的性能让每一次操作都如行云流水，告别等待，提升效率。
+          </p>
+          <a href="#" class="text-primary font-medium inline-flex items-center">
+            了解更多 <i class="fa fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+
+        <!-- 特性卡片2 -->
+        <div class="p-8 rounded-2xl bg-gray-50 card-hover">
+          <div
+            class="w-14 h-14 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary text-2xl mb-6">
+            <i class="fa fa-shield"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3">安全可靠</h3>
+          <p class="text-gray-600 mb-4">
+            银行级别的加密技术，全方位保护您的数据安全和隐私信息。
+          </p>
+          <a href="#" class="text-primary font-medium inline-flex items-center">
+            了解更多 <i class="fa fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+
+        <!-- 特性卡片3 -->
+        <div class="p-8 rounded-2xl bg-gray-50 card-hover">
+          <div class="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center text-green-600 text-2xl mb-6">
+            <i class="fa fa-cogs"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3">高度定制</h3>
+          <p class="text-gray-600 mb-4">
+            丰富的自定义选项，满足您的个性化需求，打造专属体验。
+          </p>
+          <a href="#" class="text-primary font-medium inline-flex items-center">
+            了解更多 <i class="fa fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+
+        <!-- 特性卡片4 -->
+        <div class="p-8 rounded-2xl bg-gray-50 card-hover">
+          <div
+            class="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 text-2xl mb-6">
+            <i class="fa fa-globe"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3">全球访问</h3>
+          <p class="text-gray-600 mb-4">
+            多地区服务器部署，确保全球用户都能享受稳定流畅的服务。
+          </p>
+          <a href="#" class="text-primary font-medium inline-flex items-center">
+            了解更多 <i class="fa fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+
+        <!-- 特性卡片5 -->
+        <div class="p-8 rounded-2xl bg-gray-50 card-hover">
+          <div
+            class="w-14 h-14 rounded-xl bg-yellow-100 flex items-center justify-center text-yellow-600 text-2xl mb-6">
+            <i class="fa fa-users"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3">团队协作</h3>
+          <p class="text-gray-600 mb-4">
+            强大的协作功能，让团队成员无缝配合，提升工作效率。
+          </p>
+          <a href="#" class="text-primary font-medium inline-flex items-center">
+            了解更多 <i class="fa fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+
+        <!-- 特性卡片6 -->
+        <div class="p-8 rounded-2xl bg-gray-50 card-hover">
+          <div class="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 text-2xl mb-6">
+            <i class="fa fa-life-ring"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3">全天候支持</h3>
+          <p class="text-gray-600 mb-4">
+            专业的客服团队随时待命，为您解决使用过程中遇到的任何问题。
+          </p>
+          <a href="#" class="text-primary font-medium inline-flex items-center">
+            了解更多 <i class="fa fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 展示区域 -->
+  <section id="gallery" class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span
+          class="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">精彩展示</span>
+        <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-display font-bold mb-6">精彩定格</h2>
+        <p class="text-lg text-gray-600">
+          我们的产品在不同场景下都能发挥出色，为您带来一致的优质体验。
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 展示项1 -->
+        <div class="rounded-xl overflow-hidden group relative">
+          <img
+            src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/ebbcd85cfbcc455caa07ad7f52c25f82.png~tplv-a9rns2rl98-24:720:720.png?rk3s=1fb89129&x-expires=1757922626&x-signature=M0nOrHQCyDUr%2F3y0HcO3xbZPvDQ%3D"
+            alt="产品展示图1" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+            <div class="p-6 text-white">
+              <h3 class="text-xl font-bold mb-2">创意设计</h3>
+              <p class="text-sm text-gray-200">为设计师打造的专业工具</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 展示项2 -->
+        <div class="rounded-xl overflow-hidden group relative">
+          <img
+            src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/6753c39bf5ef462c8a7c503e97fbdb56.png~tplv-a9rns2rl98-24:720:720.png?rk3s=1fb89129&x-expires=1757922719&x-signature=vwuQ7N1Q5Ejs0IMbjxXtrJhk2wM%3D"
+            alt="产品展示图2" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+            <div class="p-6 text-white">
+              <h3 class="text-xl font-bold mb-2">数据分析</h3>
+              <p class="text-sm text-gray-200">直观展示复杂数据</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 展示项3 -->
+        <div class="rounded-xl overflow-hidden group relative">
+          <img src="https://picsum.photos/id/1/600/400" alt="产品展示图3"
+            class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+            <div class="p-6 text-white">
+              <h3 class="text-xl font-bold mb-2">移动体验</h3>
+              <p class="text-sm text-gray-200">随时随地高效工作</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 展示项4 -->
+        <div class="rounded-xl overflow-hidden group relative">
+          <img src="https://picsum.photos/id/2/600/400" alt="产品展示图4"
+            class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+            <div class="p-6 text-white">
+              <h3 class="text-xl font-bold mb-2">团队协作</h3>
+              <p class="text-sm text-gray-200">无缝沟通，高效协作</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 展示项5 -->
+        <div class="rounded-xl overflow-hidden group relative">
+          <img src="https://picsum.photos/id/3/600/400" alt="产品展示图5"
+            class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+            <div class="p-6 text-white">
+              <h3 class="text-xl font-bold mb-2">项目管理</h3>
+              <p class="text-sm text-gray-200">轻松掌控项目进度</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 展示项6 -->
+        <div class="rounded-xl overflow-hidden group relative">
+          <img src="https://picsum.photos/id/4/600/400" alt="产品展示图6"
+            class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+            <div class="p-6 text-white">
+              <h3 class="text-xl font-bold mb-2">资源管理</h3>
+              <p class="text-sm text-gray-200">智能分配，优化资源</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 价格区域 -->
+  <!-- 优化后的视频模块 -->
+  <section class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">视频 视频展示
+        </span>
+        <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-display font-bold mb-6">
+          精彩视频内容
+        </h2>
+        <p class="text-lg text-gray-600">
+          观看这些视频，了解更多关于我们产品的实际应用和精彩功能。
+        </p>
+      </div>
+
+      <!-- 视频容器 - 限制最大宽度并居中 -->
+      <div id="videos" class="space-y-12 max-w-4xl mx-auto">
+        <!-- 第一排视频 -->
+        <div class="relative group">
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl transform scale-105 blur-xl opacity-0 group-hover:opacity-70 transition-all duration-500 -z-10">
+          </div>
+          <div
+            class="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
+            <!-- 修改视频容器 -->
+            <div class="aspect-video video-container">
+              <video class="video-content" controls>
+                <source src="./imgs/v01.mp4" type="video/mp4">
+                您的浏览器不支持视频播放
+              </video>
+              <!-- 自定义播放按钮覆盖层 -->
+              <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div
+                  class="w-20 h-20 rounded-full bg-primary/80 flex items-center justify-center transform scale-0 group-hover:scale-100 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <i class="fa fa-play text-white text-2xl ml-2"></i>
+                </div>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-2">经典战机解析</h3>
+              <p class="text-gray-600">详细解析二战期间著名战斗机的设计特点和战斗性能</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 第二排视频 -->
+        <div class="relative group">
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl transform scale-105 blur-xl opacity-0 group-hover:opacity-70 transition-all duration-500 -z-10">
+          </div>
+          <div
+            class="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
+            <!-- 修改视频容器 -->
+            <div class="aspect-video video-container">
+              <video class="video-content" controls>
+                <source src="./imgs/v02.mp4" type="video/mp4">
+                您的浏览器不支持视频播放
+              </video>
+              <!-- 自定义播放按钮覆盖层 -->
+              <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div
+                  class="w-20 h-20 rounded-full bg-primary/80 flex items-center justify-center transform scale-0 group-hover:scale-100 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <i class="fa fa-play text-white text-2xl ml-2"></i>
+                </div>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-2">经典战机解析</h3>
+              <p class="text-gray-600">详细解析二战期间著名战斗机的设计特点和战斗性能</p>
+            </div>
+          </div>
+
+          <!-- 第三排视频 -->
+          <div class="relative group">
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl transform scale-105 blur-xl opacity-0 group-hover:opacity-70 transition-all duration-500 -z-10">
+            </div>
+            <div
+              class="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
+              <!-- 修改视频容器 -->
+              <div class="aspect-video video-container">
+                <video class="video-content" controls>
+                  <source src="./imgs/v01.mp4" type="video/mp4">
+                  您的浏览器不支持视频播放
+                </video>
+                <!-- 自定义播放按钮覆盖层 -->
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div
+                    class="w-20 h-20 rounded-full bg-primary/80 flex items-center justify-center transform scale-0 group-hover:scale-100 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <i class="fa fa-play text-white text-2xl ml-2"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-xl font-bold mb-2">经典战机解析</h3>
+                <p class="text-gray-600">详细解析二战期间著名战斗机的设计特点和战斗性能</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 客户评价 -->
+      <section class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+          <div class="text-center max-w-2xl mx-auto mb-16">
+            <span
+              class="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">客户评价</span>
+            <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-display font-bold mb-6">用户们这样说</h2>
+            <p class="text-lg text-gray-600">
+              来自各行各业的用户已经通过我们的产品获得了卓越的体验。
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- 评价1 -->
+            <div class="p-8 rounded-2xl bg-white shadow-sm card-hover">
+              <div class="flex text-yellow-400 mb-4">
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+              </div>
+              <p class="text-gray-600 mb-6">
+                <!-- 在body结束标签前添加 -->
+                <script>
+                  // 等待DOM加载完成
+                  document.addEventListener('DOMContentLoaded', function () {
+                    // 获取所有视频元素
+                    const videos = document.querySelectorAll('video');
+                    let lastActiveVideo = null;
+
+                    // 为每个视频添加播放事件监听
+                    videos.forEach(video => {
+                      video.addEventListener('play', function () {
+                        lastActiveVideo = this;
+                      });
+                    });
+
+                    // 监听整个文档的点击事件
+                    document.addEventListener('click', function (e) {
+                      // 检查是否有正在播放的视频
+                      if (lastActiveVideo && !lastActiveVideo.paused) {
+                        // 检查点击目标是否是视频元素或其后代元素
+                        const isClickOnVideo = lastActiveVideo.contains(e.target);
+
+                        // 如果点击的不是视频本身，则暂停视频
+                        if (!isClickOnVideo) {
+                          lastActiveVideo.pause();
+                        }
+                      }
+                    });
+                  });
+                </script>
