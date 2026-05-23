@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简约艺术相册</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .page-title {
+            text-align: center;
+            color: #2d3748;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            font-size: 24px;
+        }
+        /* 新增副标题线条样式 */
+        .title-sub {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 50px;
+        }
+        .title-sub::before,
+        .title-sub::after {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background-color: #cbd5e0;
+        }
+
+        .album-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .photo-card {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            cursor: grab;
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1),
+                        box-shadow 0.3s ease;
+            will-change: transform;
+            position: relative;
+        }
+
+        .photo-card:active {
+            cursor: grabbing;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .photo-card img {
+            display: block;
+            max-width: 260px;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            transition: transform 0.4s ease;
+            pointer-events: none;
+        }
+
+        .photo-card:hover img {
+            transform: scale(1.03);
+        }
+
+        .photo-card.dragging {
+            opacity: 0.9;
+            transform: scale(1.05);
+            z-index: 999;
+            pointer-events: none;
+            transition: none;
+        }
+
+        .placeholder {
+            width: 0;
+            height: 0;
+            margin: 0;
+            padding: 0;
+            visibility: hidden;
+        }
+
+        .preview-mask {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .preview-mask.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .preview-img {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 12px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.15);
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        .preview-mask.show .preview-img {
+            transform: scale(1);
+        }
+
+        @media (max-width: 768px) {
+            .photo-card img {
+                max-width: 180px;
+            }
+            .album-container {
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2 class="page-title">艺术简约相册</h2>
+    <!-- 新增带两侧细线的小字副标题 -->
+    <div class="title-sub" style="text-align: center;">珍藏美好瞬间<br>(长按可拖动图片)</div>
+    <div class="album-container" id="album"></div>
+
+    <div class="preview-mask" id="previewMask">
+        <img src="" class="preview-img" id="previewImg">
+    </div>
+
+    <script>
+        const images = [
+            "./img2/1.jpg",
+            "./img2/2.jpg",
+            "./img2/3.jpg",
+            "./img2/4.jpg",
+            "./img2/5.jpg",
+            "./img2/6.jpg",
+            "./img2/7.jpg",
+            "./img2/8.jpg",
+            "./img2/9.jpg",
+            "./img2/10.jpg",
+            "./img2/11.jpg",
+            "./img2/12.jpg",
+            "./img2/13.jpg",
+        ];
+
+        const album = document.getElementById("album");
+        const previewMask = document.getElementById("previewMask");
+        const previewImg = document.getElementById("previewImg");
+
+        let draggingElement = null;
+        let placeholder = document.createElement("div");
+        placeholder.className = "placeholder";
+        let isDrag = false;
+        let dragTimer = null;
+
+        function init() {
+            images.forEach(src => {
+                const card = document.createElement("div");
+                card.className = "photo-card";
+                card.dataset.src = src;
+                card.innerHTML = `<img src="${src}" draggable="false">`;
+                album.appendChild(card);
+
+                // 鼠标按下区分拖拽与点击
+                card.addEventListener("mousedown", (e) => {
+                    isDrag = false;
+                    dragTimer = setTimeout(() => {
+                        isDrag = true;
+                        startDrag.call(card, e);
+                    }, 150);
+                });
+
+                // 鼠标抬起判定点击预览
+                card.addEventListener("mouseup", () => {
+                    clearTimeout(dragTimer);
+                    if (!isDrag) {
+                        previewImg.src = card.dataset.src;
+                        previewMask.classList.add("show");
+                        document.body.style.overflow = "hidden";
+                    }
+                });
+            });
+        }
+
+        function startDrag(e) {
+            draggingElement = this;
+            draggingElement.classList.add("dragging");
+
+            const rect = draggingElement.getBoundingClientRect();
+            const shiftX = e.clientX - rect.left;
+            const shiftY = e.clientY - rect.top;
+
+            draggingElement.style.position = "absolute";
+            draggingElement.style.left = e.clientX - shiftX + "px";
+            draggingElement.style.top = e.clientY - shiftY + "px";
+
+            document.addEventListener("mousemove", onMouseMove);
+            document.addEventListener("mouseup", onMouseUp);
+        }
+
+        function onMouseMove(e) {
+            if (!draggingElement) return;
+            draggingElement.style.left = e.clientX - draggingElement.offsetWidth / 2 + "px";
+            draggingElement.style.top = e.clientY - draggingElement.offsetHeight / 2 + "px";
+
+            draggingElement.style.visibility = "hidden";
+            const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+            draggingElement.style.visibility = "visible";
+
+            if (!elemBelow) return;
+            const targetCard = elemBelow.closest(".photo-card:not(.dragging)");
+            if (targetCard) {
+                targetCard.before(placeholder);
+            }
+        }
+
+        function onMouseUp() {
+            if (!draggingElement) return;
+            draggingElement.style.position = "";
+            draggingElement.style.left = "";
+            draggingElement.style.top = "";
+            draggingElement.classList.remove("dragging");
+
+            if (placeholder.parentNode) {
+                placeholder.replaceWith(draggingElement);
+            }
+
+            draggingElement = null;
+            document.removeEventListener("mousemove", onMouseMove);
+            document.removeEventListener("mouseup", onMouseUp);
+        }
+
+        previewMask.addEventListener("click", e => {
+            if (e.target === previewMask) {
+                previewMask.classList.remove("show");
+                document.body.style.overflow = "";
+            }
+        });
+
+        window.onload = init;
+    </script>
+</body>
+</html>
