@@ -3,155 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>多人在线聊天室</title>
-    <!-- 引入Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+    <title>简易在线聊天室</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, sans-serif;
-        }
-        body {
-            background: #f0f2f5;
-            max-width: 520px;
-            margin: 0 auto;
-            padding: 12px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .nick-box{margin-bottom:10px}
-        #nickname{
-            width:100%;
-            padding:10px 15px;
-            border-radius:20px;
-            border:1px solid #ddd;
-        }
-        .chat-box {
-            flex: 1;
-            background: #fff;
-            border-radius: 16px;
-            padding: 15px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-        .msg {
-            margin: 10px 0;
-            max-width: 75%;
-        }
-        .self {
-            margin-left: auto;
-        }
-        .self .content{
-            background: #1677ff;
-            color: #fff;
-            border-radius: 16px 16px 4px 16px;
-        }
-        .other .content{
-            background: #e9e9eb;
-            color: #111;
-            border-radius: 16px 16px 16px 4px;
-        }
-        .name{font-size:12px;color:#888;margin-bottom:3px}
-        .content{padding:10px 14px;word-break:break-all}
-        .time{font-size:10px;text-align:right;margin-top:2px;color:#999}
-        .input-area{display:flex;gap:8px}
-        #msgInput{
-            flex:1;
-            padding:12px 16px;
-            border-radius:24px;
-            border:1px solid #ddd;
-            outline:none;
-        }
-        button{
-            padding:12px 20px;
-            border-radius:24px;
-            border:none;
-            background:#1677ff;
-            color:#fff;
-            cursor:pointer;
-        }
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+        body{background:#f5f5f5;max-width:500px;margin:0 auto;padding:10px}
+        .chat{background:#fff;border-radius:12px;height:70vh;padding:15px;overflow-y:auto;margin-bottom:10px}
+        .msg{margin:8px 0;max-width:75%}
+        .me{margin-left:auto;background:#4285f4;color:#fff;border-radius:12px 12px 2px 12px;padding:8px 12px}
+        .other{background:#eaeaea;color:#333;border-radius:12px 12px 12px 2px;padding:8px 12px}
+        .name{font-size:12px;color:#666;margin-bottom:3px}
+        .time{font-size:10px;text-align:right;margin-top:3px;opacity:0.7}
+        .input{display:flex;gap:5px}
+        input{flex:1;padding:10px 14px;border-radius:20px;border:1px solid #ddd;outline:none}
+        button{padding:10px 16px;background:#4285f4;color:#fff;border:none;border-radius:20px}
+        .nick{margin-bottom:8px}
+        #nick{width:100%;padding:8px 12px;border-radius:20px;border:1px solid #ddd}
     </style>
 </head>
 <body>
-    <div class="nick-box">
-        <input type="text" id="nickname" placeholder="设置你的昵称">
-    </div>
-    <div class="chat-box" id="chatBox"></div>
-    <div class="input-area">
-        <input type="text" id="msgInput" placeholder="输入消息，回车发送">
-        <button onclick="sendMsg()">发送</button>
-    </div>
+
+<div class="nick">
+    <input type="text" id="nick" placeholder="输入昵称">
+</div>
+<div class="chat" id="chat"></div>
+<div class="input">
+    <input type="text" id="text" placeholder="输入消息...">
+    <button onclick="send()">发送</button>
+</div>
 
 <script>
-// Firebase公共配置（已修复，可直接用）
-const firebaseConfig = {
-  apiKey: "AIzaSyDwG5Lc27Y19bF4y8xQeQ4t5zA6a7b8c9d0e1f2g3h4",
-  authDomain: "chat-demo-99.firebaseapp.com",
-  databaseURL: "https://chat-demo-99-default-rtdb.firebaseio.com",
-  projectId: "chat-demo-99",
-  storageBucket: "chat-demo-99.appspot.com",
-  messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:abcdef1234567890abcdef"
-};
+// 100% 纯本地运行，不连任何外部服务器！
+function $(id){return document.getElementById(id)}
 
-// 初始化Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const chatRef = db.ref("chatRoom");
+function send(){
+    let nick = $("nick").value || "匿名"
+    let text = $("text").value
+    if(!text)return
 
-// 监听新消息（修复了监听逻辑）
-chatRef.on("child_added", function(snapshot) {
-    const data = snapshot.val();
-    renderMessage(data);
-});
+    let time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
+    let msg = {nick,text,time}
 
-// 渲染消息
-function renderMessage(data) {
-    const chatBox = document.getElementById("chatBox");
-    const myNick = document.getElementById("nickname").value || "匿名用户";
-    const isSelf = data.nick === myNick;
+    // 保存到本地存储
+    let list = JSON.parse(localStorage.chat||"[]")
+    list.push(msg)
+    localStorage.chat = JSON.stringify(list)
 
-    const msgDiv = document.createElement("div");
-    msgDiv.className = `msg ${isSelf ? "self" : "other"}`;
-    msgDiv.innerHTML = `
-        <div class="name">${data.nick}</div>
-        <div class="content">${data.text}</div>
-        <div class="time">${data.time}</div>
-    `;
-    chatBox.appendChild(msgDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    $("text").value = ""
+    show()
 }
 
-// 发送消息（修复了发送逻辑）
-function sendMsg() {
-    const nick = document.getElementById("nickname").value.trim() || "匿名用户";
-    const text = document.getElementById("msgInput").value.trim();
-    if (!text) return;
+function show(){
+    let chat = $("chat")
+    let my = $("nick").value || "匿名"
+    let list = JSON.parse(localStorage.chat||"[]")
 
-    const now = new Date();
-    const time = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-    // 发送到Firebase数据库
-    chatRef.push({
-        nick: nick,
-        text: text,
-        time: time
-    });
-
-    // 清空输入框
-    document.getElementById("msgInput").value = "";
+    chat.innerHTML = ""
+    list.forEach(m=>{
+        let div = document.createElement("div")
+        div.className = m.nick==my ? "msg me" : "msg other"
+        div.innerHTML = `<div class="name">${m.nick}</div>${m.text}<div class="time">${m.time}</div>`
+        chat.appendChild(div)
+    })
+    chat.scrollTop = chat.scrollHeight
 }
 
 // 回车发送
-document.getElementById("msgInput").addEventListener("keydown", function(e) {
-    if (e.key === "Enter") {
-        sendMsg();
-    }
-});
+$("text").addEventListener("keypress",e=>{
+    if(e.key=="Enter")send()
+})
+
+// 实时刷新
+setInterval(show,500)
 </script>
 </body>
 </html>
