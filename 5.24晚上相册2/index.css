@@ -1,0 +1,88 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 0; /* 全局清零，文字单独设置大小 */
+}
+
+html, body {
+    height: 100%;
+    background-color: #E7E7E7;
+}
+
+/* --- 大标题样式 --- */
+.main-title {
+    text-align: center;
+    margin: 40px auto 10px; /* 上下间距，和下面的小标题分开 */
+    font-size: 36px; /* 大标题字号 */
+    color: #333;
+    font-weight: bold;
+    font-family: "微软雅黑", sans-serif;
+}
+
+/* --- 小标题+线条样式（已解决重叠问题） --- */
+.subtitle {
+    text-align: center;
+    margin: 0 auto 40px;
+    display: inline-block;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+
+    font-size: 18px;
+    color: #555;
+    padding: 0 120px; /* 文字左右留空间，防止线条重叠 */
+}
+
+/* 左侧线条 */
+.subtitle::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100px; /* 线条长度 */
+    height: 1px;
+    background-color: #999;
+}
+
+/* 右侧线条 */
+.subtitle::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 100px;
+    height: 1px;
+    background-color: #999;
+}
+
+/* --- 图片居中容器 --- */
+#cont {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.ima {
+    width: 310px;
+    padding: 18px;
+    margin: 30px;
+    background-color: #FFFFFF;
+    transition: transform 0.8s;
+}
+
+.ima:hover {
+    transform: scale(1.5) rotate(0deg) !important;
+}
+
+#a { transform: rotate(12deg); }
+#b { transform: rotate(-5deg); }
+#c { transform: rotate(10deg); }
+#d { transform: rotate(8deg); }
+#e { transform: rotate(-10deg); }
+#f { transform: rotate(-5deg); }
+#g { transform: rotate(10deg); }
+#h { transform: rotate(8deg); }
+#i { transform: rotate(-8deg); }
