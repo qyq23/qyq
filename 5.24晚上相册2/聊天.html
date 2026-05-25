@@ -1,40 +1,213 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8">
-    <title>局域网聊天</title>
+<meta charset="utf-8">
+<title>局域网聊天室</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Microsoft Yahei", sans-serif;
+}
+body {
+    background-color: #f5f7fa;
+    padding: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    padding: 25px;
+}
+.title {
+    text-align: center;
+    color: #2d3748;
+    margin-bottom: 12px;
+    font-size: 24px;
+}
+.sub-title-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+.line {
+    width: 60px;
+    height: 1px;
+    background-color: #ccc;
+}
+.sub-title {
+    margin: 0 15px;
+    font-size: 14px;
+    color: #666;
+}
+.form-item {
+    margin-bottom: 18px;
+}
+label {
+    display: inline-block;
+    width: 70px;
+    color: #4a5568;
+    font-size: 15px;
+}
+input {
+    padding: 9px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    width: 260px;
+    font-size: 14px;
+    transition: border 0.2s;
+}
+input:focus {
+    outline: none;
+    border-color: #4299e1;
+}
+.btn-group {
+    margin: 20px 0;
+}
+button {
+    padding: 9px 22px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 12px;
+    transition: opacity 0.2s;
+}
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.link-btn {
+    background-color: #4299e1;
+    color: white;
+}
+.exit-btn {
+    background-color: #e53e3e;
+    color: white;
+}
+.chat-box {
+    height: 320px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 15px;
+    overflow-y: auto;
+    background-color: #f8fafc;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+.send-area {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+#msg {
+    flex: 1;
+}
+.send-btn {
+    background-color: #38b2ac;
+    color: white;
+}
+</style>
 </head>
 <body>
-    <h1>局域网聊天</h1>
-    昵称：<input type="text" id="name"><br><br>
-    服务器IP：<input type="text" id="ip" value="127.0.0.1"><br><br>
-    <button onclick="connect()">连接</button>
-    <hr>
-    <div id="msgBox" style="height:300px; border:1px solid #ccc; overflow-y:auto;"></div>
-    <br>
-    输入：<input type="text" id="inputMsg" style="width:70%">
-    <button onclick="send()">发送</button>
+<div class="container">
+    <h2 class="title">局域网聊天室</h2>
+    <div class="sub-title-wrap">
+        <span class="line"></span>
+        <span class="sub-title">服务器IP填192.168.3.13</span>
+        <span class="line"></span>
+    </div>
 
-    <script>
-        let ws;
-        function connect() {
-            const name = document.getElementById("name").value;
-            const ip = document.getElementById("ip").value;
-            ws = new WebSocket(`ws://${ip}:8080`);
+    <div class="form-item">
+        <label>昵称：</label>
+        <input type="text" id="name" placeholder="请输入聊天昵称">
+    </div>
 
-            ws.onopen = () => alert("连接成功！");
-            ws.onmessage = (event) => {
-                // 直接把消息当文本追加到页面
-                document.getElementById("msgBox").innerHTML += event.data + "<br>";
-            };
-        }
+    <div class="form-item">
+        <label>服务器IP：</label>
+        <input type="text" id="ip" value="192.168.3.13">
+    </div>
 
-        function send() {
-            const name = document.getElementById("name").value;
-            const text = document.getElementById("inputMsg").value;
-            ws.send(`${name}：${text}`);
-            document.getElementById("inputMsg").value = "";
-        }
-    </script>
+    <div class="btn-group">
+        <button class="link-btn" onclick="link()" id="linkBtn">连接</button>
+        <button class="exit-btn" onclick="exit()" id="exitBtn" disabled>退出</button>
+    </div>
+
+    <div id="box" class="chat-box"></div>
+
+    <div class="send-area">
+        <input type="text" id="msg" placeholder="输入消息内容">
+        <button class="send-btn" onclick="send()">发送</button>
+    </div>
+</div>
+
+<script>
+var ws;
+var isConnected = false;
+
+function link(){
+  if(isConnected) return;
+  let name = document.getElementById("name").value.trim();
+  let ip = document.getElementById("ip").value.trim();
+  
+  if(!name){
+    alert("请输入昵称！");
+    return;
+  }
+
+  isConnected = true;
+  document.getElementById("name").disabled = true;
+  document.getElementById("linkBtn").disabled = true;
+  document.getElementById("exitBtn").disabled = false;
+
+  ws = new WebSocket("ws://"+ip+":8080");
+
+  ws.onopen = function(){
+    alert("连接成功！");
+  };
+
+  ws.onmessage = function(res){
+    document.getElementById("box").innerHTML += res.data + "<br>";
+    document.getElementById("box").scrollTop = document.getElementById("box").scrollHeight;
+  };
+
+  ws.onclose = function(){
+    resetStatus();
+  };
+
+  ws.onerror = function(){
+    alert("连接失败！");
+    resetStatus();
+  };
+}
+
+function exit(){
+  if(ws){
+    ws.close();
+  }
+  resetStatus();
+}
+
+function resetStatus(){
+  isConnected = false;
+  document.getElementById("name").disabled = false;
+  document.getElementById("linkBtn").disabled = false;
+  document.getElementById("exitBtn").disabled = true;
+}
+
+function send(){
+  if(!isConnected) return;
+  let name = document.getElementById("name").value;
+  let msg = document.getElementById("msg").value.trim();
+  if(!msg) return;
+
+  ws.send(name + "：" + msg);
+  document.getElementById("msg").value = "";
+}
+</script>
 </body>
 </html>
