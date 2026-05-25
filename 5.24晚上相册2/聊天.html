@@ -1,86 +1,40 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>多人实时聊天室</title>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
-        body{background:#f0f2f5;max-width:500px;margin:0 auto;padding:10px}
-        .chat-box{background:#fff;border-radius:15px;height:75vh;padding:15px;overflow-y:auto;margin-bottom:10px}
-        .msg{margin:8px 0;max-width:75%}
-        .my-msg{margin-left:auto;background:#0099ff;color:#fff;border-radius:15px 15px 3px 15px;padding:10px 12px}
-        .other-msg{background:#e9e9eb;color:#000;border-radius:15px 15px 15px 3px;padding:10px 12px}
-        .name{font-size:12px;color:#666;margin-bottom:3px}
-        .time{font-size:10px;text-align:right;opacity:0.7}
-        .input-area{display:flex;gap:5px}
-        input{flex:1;padding:12px 15px;border-radius:30px;border:1px solid #ddd;outline:none}
-        button{padding:12px 18px;background:#0099ff;color:#fff;border:none;border-radius:30px}
-        .nick{margin-bottom:8px}
-        #nickname{width:100%;padding:10px;border-radius:20px;border:1px solid #ddd}
-    </style>
+    <meta charset="utf-8">
+    <title>局域网聊天</title>
 </head>
 <body>
-
-<div class="nick">
-    <input type="text" id="nickname" placeholder="输入你的昵称">
-</div>
-<div class="chat-box" id="chatBox"></div>
-<div class="input-area">
-    <input type="text" id="msgInput" placeholder="输入消息...">
+    <h1>局域网聊天</h1>
+    昵称：<input type="text" id="name"><br><br>
+    服务器IP：<input type="text" id="ip" value="127.0.0.1"><br><br>
+    <button onclick="connect()">连接</button>
+    <hr>
+    <div id="msgBox" style="height:300px; border:1px solid #ccc; overflow-y:auto;"></div>
+    <br>
+    输入：<input type="text" id="inputMsg" style="width:70%">
     <button onclick="send()">发送</button>
-</div>
 
-<script>
-// 全球公共 ws 服务器，所有人互通
-const ws = new WebSocket("wss://echo.websocket.events");
-const chatBox = document.getElementById("chatBox");
+    <script>
+        let ws;
+        function connect() {
+            const name = document.getElementById("name").value;
+            const ip = document.getElementById("ip").value;
+            ws = new WebSocket(`ws://${ip}:8080`);
 
-// 收到消息自动显示
-ws.onmessage = function(e) {
-    try {
-        let data = JSON.parse(e.data);
-        showMsg(data);
-    } catch(err) {}
-};
+            ws.onopen = () => alert("连接成功！");
+            ws.onmessage = (event) => {
+                // 直接把消息当文本追加到页面
+                document.getElementById("msgBox").innerHTML += event.data + "<br>";
+            };
+        }
 
-// 发送消息
-function send() {
-    let nick = document.getElementById("nickname").value || "匿名";
-    let text = document.getElementById("msgInput").value.trim();
-    if (!text) return;
-
-    let data = {
-        nick: nick,
-        text: text,
-        time: new Date().toLocaleTimeString()
-    };
-
-    ws.send(JSON.stringify(data));
-    document.getElementById("msgInput").value = "";
-}
-
-// 显示消息
-function showMsg(data) {
-    let myNick = document.getElementById("nickname").value || "匿名";
-    let isMe = data.nick === myNick;
-
-    let div = document.createElement("div");
-    div.className = isMe ? "msg my-msg" : "msg other-msg";
-    div.innerHTML = `
-        <div class="name">${data.nick}</div>
-        <div>${data.text}</div>
-        <div class="time">${data.time}</div>
-    `;
-
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-// 回车发送
-document.getElementById("msgInput").addEventListener("keypress", e => {
-    if (e.key === "Enter") send();
-});
-</script>
+        function send() {
+            const name = document.getElementById("name").value;
+            const text = document.getElementById("inputMsg").value;
+            ws.send(`${name}：${text}`);
+            document.getElementById("inputMsg").value = "";
+        }
+    </script>
 </body>
 </html>
