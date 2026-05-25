@@ -168,6 +168,8 @@ function link(){
 
   ws.onopen = function(){
     alert("连接成功！");
+    // 连接成功后，立刻发送一条上线通知
+    ws.send(name + "：已加入聊天室");
   };
 
   ws.onmessage = function(res){
@@ -180,7 +182,7 @@ function link(){
   };
 
   ws.onerror = function(){
-    alert("连接失败！");
+    alert("连接失败！主机好像没有开启服务器，请联系主机开启服务器后再试一下");
     resetStatus();
   };
 }
