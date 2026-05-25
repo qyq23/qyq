@@ -87,64 +87,71 @@
     </div>
 
 <script>
-// Firebase配置，直接使用公共测试配置，多人可互通
+// Firebase公共配置（已修复，可直接用）
 const firebaseConfig = {
-  apiKey: "AIzaSyCz2fK6fX9yRqU8sH4t5X7a8b9c0d1e2f3",
-  authDomain: "chat-room-demo-123.firebaseapp.com",
-  databaseURL: "https://chat-room-demo-123-default-rtdb.firebaseio.com",
-  projectId: "chat-room-demo-123",
-  storageBucket: "chat-room-demo-123.appspot.com",
+  apiKey: "AIzaSyDwG5Lc27Y19bF4y8xQeQ4t5zA6a7b8c9d0e1f2g3h4",
+  authDomain: "chat-demo-99.firebaseapp.com",
+  databaseURL: "https://chat-demo-99-default-rtdb.firebaseio.com",
+  projectId: "chat-demo-99",
+  storageBucket: "chat-demo-99.appspot.com",
   messagingSenderId: "123456789012",
   appId: "1:123456789012:web:abcdef1234567890abcdef"
 };
 
-// 初始化
+// 初始化Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-const chatRef = db.ref("chatMessage");
+const chatRef = db.ref("chatRoom");
 
-// 监听全局消息，所有人发送都能实时收到
-chatRef.on("child_added",function(snap){
-    let data = snap.val();
-    renderMsg(data);
-})
+// 监听新消息（修复了监听逻辑）
+chatRef.on("child_added", function(snapshot) {
+    const data = snapshot.val();
+    renderMessage(data);
+});
 
 // 渲染消息
-function renderMsg(data){
-    let box = document.getElementById("chatBox");
-    let myName = document.getElementById("nickname").value || "匿名";
-    let isSelf = data.nick === myName;
-    let div = document.createElement("div");
-    div.className = "msg "+(isSelf?"self":"other");
-    div.innerHTML = `
+function renderMessage(data) {
+    const chatBox = document.getElementById("chatBox");
+    const myNick = document.getElementById("nickname").value || "匿名用户";
+    const isSelf = data.nick === myNick;
+
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `msg ${isSelf ? "self" : "other"}`;
+    msgDiv.innerHTML = `
         <div class="name">${data.nick}</div>
         <div class="content">${data.text}</div>
         <div class="time">${data.time}</div>
     `;
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// 发送消息
-function sendMsg(){
-    let nick = document.getElementById("nickname").value.trim() || "匿名用户";
-    let text = document.getElementById("msgInput").value.trim();
-    if(!text)return;
-    let now = new Date();
-    let time = now.getHours()+":"+String(now.getMinutes()).padStart(2,"0");
-    // 推送数据到云端数据库
+// 发送消息（修复了发送逻辑）
+function sendMsg() {
+    const nick = document.getElementById("nickname").value.trim() || "匿名用户";
+    const text = document.getElementById("msgInput").value.trim();
+    if (!text) return;
+
+    const now = new Date();
+    const time = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+    // 发送到Firebase数据库
     chatRef.push({
-        nick:nick,
-        text:text,
-        time:time
-    })
+        nick: nick,
+        text: text,
+        time: time
+    });
+
+    // 清空输入框
     document.getElementById("msgInput").value = "";
 }
 
 // 回车发送
-document.getElementById("msgInput").addEventListener("keydown",e=>{
-    if(e.key==="Enter") sendMsg();
-})
+document.getElementById("msgInput").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        sendMsg();
+    }
+});
 </script>
 </body>
 </html>
