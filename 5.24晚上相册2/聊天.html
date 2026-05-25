@@ -3,77 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>简易在线聊天室</title>
+    <title>多人实时聊天室</title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-        body{background:#f5f5f5;max-width:500px;margin:0 auto;padding:10px}
-        .chat{background:#fff;border-radius:12px;height:70vh;padding:15px;overflow-y:auto;margin-bottom:10px}
+        *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+        body{background:#f0f2f5;max-width:500px;margin:0 auto;padding:10px}
+        .chat-box{background:#fff;border-radius:15px;height:75vh;padding:15px;overflow-y:auto;margin-bottom:10px}
         .msg{margin:8px 0;max-width:75%}
-        .me{margin-left:auto;background:#4285f4;color:#fff;border-radius:12px 12px 2px 12px;padding:8px 12px}
-        .other{background:#eaeaea;color:#333;border-radius:12px 12px 12px 2px;padding:8px 12px}
+        .my-msg{margin-left:auto;background:#0099ff;color:#fff;border-radius:15px 15px 3px 15px;padding:10px 12px}
+        .other-msg{background:#e9e9eb;color:#000;border-radius:15px 15px 15px 3px;padding:10px 12px}
         .name{font-size:12px;color:#666;margin-bottom:3px}
-        .time{font-size:10px;text-align:right;margin-top:3px;opacity:0.7}
-        .input{display:flex;gap:5px}
-        input{flex:1;padding:10px 14px;border-radius:20px;border:1px solid #ddd;outline:none}
-        button{padding:10px 16px;background:#4285f4;color:#fff;border:none;border-radius:20px}
+        .time{font-size:10px;text-align:right;opacity:0.7}
+        .input-area{display:flex;gap:5px}
+        input{flex:1;padding:12px 15px;border-radius:30px;border:1px solid #ddd;outline:none}
+        button{padding:12px 18px;background:#0099ff;color:#fff;border:none;border-radius:30px}
         .nick{margin-bottom:8px}
-        #nick{width:100%;padding:8px 12px;border-radius:20px;border:1px solid #ddd}
+        #nickname{width:100%;padding:10px;border-radius:20px;border:1px solid #ddd}
     </style>
 </head>
 <body>
 
 <div class="nick">
-    <input type="text" id="nick" placeholder="输入昵称">
+    <input type="text" id="nickname" placeholder="输入你的昵称">
 </div>
-<div class="chat" id="chat"></div>
-<div class="input">
-    <input type="text" id="text" placeholder="输入消息...">
+<div class="chat-box" id="chatBox"></div>
+<div class="input-area">
+    <input type="text" id="msgInput" placeholder="输入消息...">
     <button onclick="send()">发送</button>
 </div>
 
 <script>
-// 100% 纯本地运行，不连任何外部服务器！
-function $(id){return document.getElementById(id)}
+// 全球公共 ws 服务器，所有人互通
+const ws = new WebSocket("wss://echo.websocket.events");
+const chatBox = document.getElementById("chatBox");
 
-function send(){
-    let nick = $("nick").value || "匿名"
-    let text = $("text").value
-    if(!text)return
+// 收到消息自动显示
+ws.onmessage = function(e) {
+    try {
+        let data = JSON.parse(e.data);
+        showMsg(data);
+    } catch(err) {}
+};
 
-    let time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
-    let msg = {nick,text,time}
+// 发送消息
+function send() {
+    let nick = document.getElementById("nickname").value || "匿名";
+    let text = document.getElementById("msgInput").value.trim();
+    if (!text) return;
 
-    // 保存到本地存储
-    let list = JSON.parse(localStorage.chat||"[]")
-    list.push(msg)
-    localStorage.chat = JSON.stringify(list)
+    let data = {
+        nick: nick,
+        text: text,
+        time: new Date().toLocaleTimeString()
+    };
 
-    $("text").value = ""
-    show()
+    ws.send(JSON.stringify(data));
+    document.getElementById("msgInput").value = "";
 }
 
-function show(){
-    let chat = $("chat")
-    let my = $("nick").value || "匿名"
-    let list = JSON.parse(localStorage.chat||"[]")
+// 显示消息
+function showMsg(data) {
+    let myNick = document.getElementById("nickname").value || "匿名";
+    let isMe = data.nick === myNick;
 
-    chat.innerHTML = ""
-    list.forEach(m=>{
-        let div = document.createElement("div")
-        div.className = m.nick==my ? "msg me" : "msg other"
-        div.innerHTML = `<div class="name">${m.nick}</div>${m.text}<div class="time">${m.time}</div>`
-        chat.appendChild(div)
-    })
-    chat.scrollTop = chat.scrollHeight
+    let div = document.createElement("div");
+    div.className = isMe ? "msg my-msg" : "msg other-msg";
+    div.innerHTML = `
+        <div class="name">${data.nick}</div>
+        <div>${data.text}</div>
+        <div class="time">${data.time}</div>
+    `;
+
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 // 回车发送
-$("text").addEventListener("keypress",e=>{
-    if(e.key=="Enter")send()
-})
-
-// 实时刷新
-setInterval(show,500)
+document.getElementById("msgInput").addEventListener("keypress", e => {
+    if (e.key === "Enter") send();
+});
 </script>
 </body>
 </html>
