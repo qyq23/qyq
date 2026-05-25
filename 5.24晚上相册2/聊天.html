@@ -1,1 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线聊天室</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
+        body {
+            background: #e6eaf8;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .chat-box {
+            background: white;
+            border-radius: 15px;
+            height: 75vh;
+            padding: 15px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .msg {
+            margin: 8px 0;
+            max-width: 70%;
+        }
+
+        .my-msg {
+            margin-left: auto;
+            background: #4a89ff;
+            color: white;
+            border-radius: 15px 15px 3px 15px;
+            padding: 10px 12px;
+        }
+
+        .other-msg {
+            background: #f1f1f1;
+            color: #333;
+            border-radius: 15px 15px 15px 3px;
+            padding: 10px 12px;
+        }
+
+        .name {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .time {
+            font-size: 10px;
+            text-align: right;
+            margin-top: 3px;
+            opacity: 0.7;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 5px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 30px;
+            border: none;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        button {
+            padding: 12px 18px;
+            border-radius: 30px;
+            background: #4a89ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nick {
+            margin-bottom: 8px;
+        }
+
+        #nickname {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nick">
+        <input type="text" id="nickname" placeholder="输入你的昵称">
+    </div>
+
+    <div class="chat-box" id="chatBox"></div>
+
+    <div class="input-area">
+        <input type="text" id="msgInput" placeholder="输入消息...">
+        <button onclick="sendMsg()">发送</button>
+    </div>
+
+    <script>
+        function sendMsg() {
+            const nick = document.getElementById('nickname').value || '匿名用户';
+            const msg = document.getElementById('msgInput').value;
+            const chatBox = document.getElementById('chatBox');
+
+            if (!msg) return;
+
+            const time = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = 'msg my-msg';
+            div.innerHTML = `
+                <div class="name">${nick}</div>
+                <div>${msg}</div>
+                <div class="time">${time}</div>
+            `;
+
+            chatBox.appendChild(div);
+            document.getElementById('msgInput').value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        document.getElementById('msgInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMsg();
+        });
+    </script>
+</body>
+</html>
