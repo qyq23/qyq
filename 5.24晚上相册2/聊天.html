@@ -96,8 +96,14 @@ button:disabled {
     padding: 15px;
     overflow-y: auto;
     background-color: #f8fafc;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     line-height: 1.6;
+}
+.status-text {
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+    margin-bottom: 15px;
 }
 .send-area {
     display: flex;
@@ -110,6 +116,13 @@ button:disabled {
 .send-btn {
     background-color: #38b2ac;
     color: white;
+}
+.system-msg {
+    color: #92400e;
+    background-color: #fef3c7;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
 }
 </style>
 </head>
@@ -138,6 +151,7 @@ button:disabled {
     </div>
 
     <div id="box" class="chat-box"></div>
+    <div class="status-text" id="statusText">状态：未连接</div>
 
     <div class="send-area">
         <input type="text" id="msg" placeholder="输入消息内容">
@@ -155,7 +169,7 @@ function link(){
   let ip = document.getElementById("ip").value.trim();
   
   if(!name){
-    alert("请输入昵称！");
+    addSystemMsg("请输入昵称！");
     return;
   }
 
@@ -163,11 +177,14 @@ function link(){
   document.getElementById("name").disabled = true;
   document.getElementById("linkBtn").disabled = true;
   document.getElementById("exitBtn").disabled = false;
+  document.getElementById("statusText").innerText = "状态：连接中...";
 
   ws = new WebSocket("ws://"+ip+":8080");
 
   ws.onopen = function(){
-    alert("连接成功！");
+    // 去掉alert，改用聊天框提示
+    addSystemMsg("✅ 连接成功！");
+    document.getElementById("statusText").innerText = "状态：已连接";
     // 连接成功后，立刻发送一条上线通知
     ws.send(name + "：已加入聊天室");
   };
@@ -179,11 +196,14 @@ function link(){
 
   ws.onclose = function(){
     resetStatus();
+    addSystemMsg("❌ 连接已断开");
+    document.getElementById("statusText").innerText = "状态：已断开";
   };
 
   ws.onerror = function(){
-    alert("连接失败！主机好像没有开启服务器，请联系主机开启服务器后再试一下");
     resetStatus();
+    addSystemMsg("⚠️ 连接失败，请检查IP和服务器，或者主机好像没有开启服务器");
+    document.getElementById("statusText").innerText = "状态：连接失败";
   };
 }
 
@@ -209,6 +229,13 @@ function send(){
 
   ws.send(name + "：" + msg);
   document.getElementById("msg").value = "";
+}
+
+// 在聊天框里显示系统提示
+function addSystemMsg(text) {
+  const box = document.getElementById("box");
+  box.innerHTML += `<span class="system-msg">系统：${text}</span><br>`;
+  box.scrollTop = box.scrollHeight;
 }
 </script>
 </body>
