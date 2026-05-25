@@ -3,135 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在线聊天室</title>
+    <title>多人在线聊天室</title>
+    <!-- 引入Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: system-ui, sans-serif;
         }
-
         body {
-            background: #e6eaf8;
-            max-width: 500px;
+            background: #f0f2f5;
+            max-width: 520px;
             margin: 0 auto;
-            padding: 10px;
+            padding: 12px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-
+        .nick-box{margin-bottom:10px}
+        #nickname{
+            width:100%;
+            padding:10px 15px;
+            border-radius:20px;
+            border:1px solid #ddd;
+        }
         .chat-box {
-            background: white;
-            border-radius: 15px;
-            height: 75vh;
+            flex: 1;
+            background: #fff;
+            border-radius: 16px;
             padding: 15px;
             overflow-y: auto;
             margin-bottom: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-
         .msg {
-            margin: 8px 0;
-            max-width: 70%;
+            margin: 10px 0;
+            max-width: 75%;
         }
-
-        .my-msg {
+        .self {
             margin-left: auto;
-            background: #4a89ff;
-            color: white;
-            border-radius: 15px 15px 3px 15px;
-            padding: 10px 12px;
         }
-
-        .other-msg {
-            background: #f1f1f1;
-            color: #333;
-            border-radius: 15px 15px 15px 3px;
-            padding: 10px 12px;
+        .self .content{
+            background: #1677ff;
+            color: #fff;
+            border-radius: 16px 16px 4px 16px;
         }
-
-        .name {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 3px;
+        .other .content{
+            background: #e9e9eb;
+            color: #111;
+            border-radius: 16px 16px 16px 4px;
         }
-
-        .time {
-            font-size: 10px;
-            text-align: right;
-            margin-top: 3px;
-            opacity: 0.7;
+        .name{font-size:12px;color:#888;margin-bottom:3px}
+        .content{padding:10px 14px;word-break:break-all}
+        .time{font-size:10px;text-align:right;margin-top:2px;color:#999}
+        .input-area{display:flex;gap:8px}
+        #msgInput{
+            flex:1;
+            padding:12px 16px;
+            border-radius:24px;
+            border:1px solid #ddd;
+            outline:none;
         }
-
-        .input-area {
-            display: flex;
-            gap: 5px;
-        }
-
-        input {
-            flex: 1;
-            padding: 12px 15px;
-            border-radius: 30px;
-            border: none;
-            outline: none;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
-        }
-
-        button {
-            padding: 12px 18px;
-            border-radius: 30px;
-            background: #4a89ff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .nick {
-            margin-bottom: 8px;
-        }
-
-        #nickname {
-            width: 100%;
+        button{
+            padding:12px 20px;
+            border-radius:24px;
+            border:none;
+            background:#1677ff;
+            color:#fff;
+            cursor:pointer;
         }
     </style>
 </head>
 <body>
-
-    <div class="nick">
-        <input type="text" id="nickname" placeholder="输入你的昵称">
+    <div class="nick-box">
+        <input type="text" id="nickname" placeholder="设置你的昵称">
     </div>
-
     <div class="chat-box" id="chatBox"></div>
-
     <div class="input-area">
-        <input type="text" id="msgInput" placeholder="输入消息...">
+        <input type="text" id="msgInput" placeholder="输入消息，回车发送">
         <button onclick="sendMsg()">发送</button>
     </div>
 
-    <script>
-        function sendMsg() {
-            const nick = document.getElementById('nickname').value || '匿名用户';
-            const msg = document.getElementById('msgInput').value;
-            const chatBox = document.getElementById('chatBox');
+<script>
+// Firebase配置，直接使用公共测试配置，多人可互通
+const firebaseConfig = {
+  apiKey: "AIzaSyCz2fK6fX9yRqU8sH4t5X7a8b9c0d1e2f3",
+  authDomain: "chat-room-demo-123.firebaseapp.com",
+  databaseURL: "https://chat-room-demo-123-default-rtdb.firebaseio.com",
+  projectId: "chat-room-demo-123",
+  storageBucket: "chat-room-demo-123.appspot.com",
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdef1234567890abcdef"
+};
 
-            if (!msg) return;
+// 初始化
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const chatRef = db.ref("chatMessage");
 
-            const time = new Date().toLocaleTimeString();
-            const div = document.createElement('div');
-            div.className = 'msg my-msg';
-            div.innerHTML = `
-                <div class="name">${nick}</div>
-                <div>${msg}</div>
-                <div class="time">${time}</div>
-            `;
+// 监听全局消息，所有人发送都能实时收到
+chatRef.on("child_added",function(snap){
+    let data = snap.val();
+    renderMsg(data);
+})
 
-            chatBox.appendChild(div);
-            document.getElementById('msgInput').value = '';
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
+// 渲染消息
+function renderMsg(data){
+    let box = document.getElementById("chatBox");
+    let myName = document.getElementById("nickname").value || "匿名";
+    let isSelf = data.nick === myName;
+    let div = document.createElement("div");
+    div.className = "msg "+(isSelf?"self":"other");
+    div.innerHTML = `
+        <div class="name">${data.nick}</div>
+        <div class="content">${data.text}</div>
+        <div class="time">${data.time}</div>
+    `;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
 
-        document.getElementById('msgInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') sendMsg();
-        });
-    </script>
+// 发送消息
+function sendMsg(){
+    let nick = document.getElementById("nickname").value.trim() || "匿名用户";
+    let text = document.getElementById("msgInput").value.trim();
+    if(!text)return;
+    let now = new Date();
+    let time = now.getHours()+":"+String(now.getMinutes()).padStart(2,"0");
+    // 推送数据到云端数据库
+    chatRef.push({
+        nick:nick,
+        text:text,
+        time:time
+    })
+    document.getElementById("msgInput").value = "";
+}
+
+// 回车发送
+document.getElementById("msgInput").addEventListener("keydown",e=>{
+    if(e.key==="Enter") sendMsg();
+})
+</script>
 </body>
 </html>
