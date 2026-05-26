@@ -68,6 +68,7 @@ button:disabled{opacity:0.5;cursor:not-allowed;}
         <div class="log-item">✅ 连接状态实时显示</div>
         <div class="log-item">✅ 新增首次打开更新日志弹窗</div>
         <div class="log-item">✅ 新增可折叠历史更新日志记录</div>
+        <div class="log-item">✅ 新增【未连接也能看在线列表】功能</div>
         <button class="log-close" onclick="closeLog()">我知道了</button>
     </div>
 </div>
@@ -122,10 +123,11 @@ button:disabled{opacity:0.5;cursor:not-allowed;}
             <div class="history-item">• 实时在线人数 + 在线成员列表</div>
             <div class="history-item">• 每条消息显示时间</div>
             <div class="history-item">• 禁止重复昵称，防刷屏</div>
-            <div class="history-item">• 修复重复名称和连接失败的无限重连BUG</div>
+            <div class="history-item">• 修复无限重连BUG</div>
             <div class="history-item">• 回车快捷发送、清空记录</div>
             <div class="history-item">• 新增更新日志弹窗</div>
             <div class="history-item">• 新增可折叠历史日志</div>
+            <div class="history-item">• 新增【未连接也能看在线列表】功能</div>
             <br>
             <div class="log-item"><strong>V1.0</strong></div>
             <div class="history-item">• 基础聊天功能</div>
@@ -138,6 +140,37 @@ button:disabled{opacity:0.5;cursor:not-allowed;}
 
 <script>
 let ws, isConnected = false, myName = "";
+// 新增：后台轻量连接，专门用来接收在线列表
+let watcherWs;
+
+// 页面加载时，就建立后台连接
+window.onload = function() {
+    initWatcher();
+}
+
+function initWatcher() {
+    const ip = document.getElementById("ip").value.trim();
+    watcherWs = new WebSocket("ws://" + ip + ":8080");
+
+    watcherWs.onmessage = function(res) {
+        try {
+            let d = JSON.parse(res.data);
+            if (d.type === "online") {
+                document.getElementById("onlineNum").innerText = "在线人数：" + d.count;
+                return;
+            }
+            if (d.type === "userList") {
+                renderUserList(d.list);
+                return;
+            }
+        } catch (e) {}
+    };
+
+    watcherWs.onclose = function() {
+        // 断开后5秒重试，保证一直能看列表
+        setTimeout(initWatcher, 5000);
+    };
+}
 
 function closeLog(){
     document.getElementById("logModal").style.display = "none";
