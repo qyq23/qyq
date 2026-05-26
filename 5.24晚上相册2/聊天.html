@@ -6,7 +6,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft Yahei",sans-serif;}
 body{background:#f5f7fa;padding:30px;max-width:900px;margin:0 auto;}
-.container{background:#fff;border-radius:12px;box-shadow:0 2px 15px rgba(0,0,0,0.1);padding:25px;}
+.container{background:#fff;border-radius:12px;box-shadow:0 2px 15px rgba(0,0,0,0.08);padding:25px;}
 .title{text-align:center;color:#2d3748;margin-bottom:12px;font-size:24px;}
 .sub-title-wrap{display:flex;align-items:center;justify-content:center;margin-bottom:20px;}
 .line{width:60px;height:1px;background:#ccc;}
@@ -27,9 +27,10 @@ button:disabled{opacity:0.5;cursor:not-allowed;}
 .link-btn{background:#4299e1;color:#fff;}
 .exit-btn{background:#e53e3e;color:#fff;}
 .clear-btn{background:#999;color:#fff;}
-.send-area{display:flex;gap:10px;align-items:center;}
+.send-area{display:flex;gap:10px;align-items:center;position:relative;}
 #msg{flex:1;}
 .send-btn{background:#38b2ac;color:#fff;}
+.emoji-btn{background:#f0b429;color:#fff;}
 .system-msg{color:#0d6efd;background:#e7f1ff;padding:4px 10px;border-radius:6px;display:inline-block;margin:4px 0;}
 .tip-msg{color:#dc3545;background:#ffe9ec;padding:4px 10px;border-radius:6px;margin:4px 0;display:inline-block;}
 .msg-self{text-align:right;margin:6px 0;}
@@ -39,8 +40,10 @@ button:disabled{opacity:0.5;cursor:not-allowed;}
 .msg-time{font-size:11px;color:#999;margin-top:3px;}
 
 .log-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:999;}
-.log-box{background:#fff;width:420px;border-radius:10px;box-shadow:0 5px 20px rgba(0,0,0,0.2);padding:25px;position:relative;}
-.log-title{font-size:20px;font-weight:bold;margin-bottom:15px;color:#2d3748;text-align:center;}
+.log-box{background:#fff;width:420px;border-radius:10px;box-shadow:0 5px 20px rgba(0,0,0,0.15);padding:25px;position:relative;}
+.log-title-wrap{text-align:center;margin-bottom:15px;}
+.log-title{font-size:20px;font-weight:bold;color:#2d3748;display:inline-block;}
+.log-date-small{font-size:13px;color:#888;margin-left:8px;}
 .log-item{margin:6px 0;font-size:14px;color:#444;line-height:1.5;}
 .log-close{margin-top:20px;background:#4299e1;color:#fff;border:none;padding:10px 0;width:100%;border-radius:6px;cursor:pointer;font-size:15px;}
 
@@ -51,24 +54,44 @@ button:disabled{opacity:0.5;cursor:not-allowed;}
 .history-item{padding:4px 0;font-size:14px;color:#555;}
 .arrow{transition:0.2s;}
 .arrow.open{transform:rotate(180deg);}
+.log-date{color:#888;font-size:13px;margin-bottom:6px;}
+
+.emoji-panel{
+    position:absolute;
+    bottom:50px;
+    left:0;
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:10px;
+    width:320px;
+    display:none;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    z-index:10;
+}
+.emoji-panel.show{display:block;}
+.emoji-item{
+    display:inline-block;
+    font-size:22px;
+    padding:4px 8px;
+    cursor:pointer;
+    border-radius:4px;
+}
+.emoji-item:hover{background:#f1f1f1;}
 </style>
 </head>
 <body>
 
+<!-- 弹窗：标题后加了小字体日期 -->
 <div class="log-modal" id="logModal">
     <div class="log-box">
-        <div class="log-title">📝 最新更新（V2.0）</div>
-        <div class="log-item">✅ 优化UI界面，左右气泡聊天</div>
-        <div class="log-item">✅ 加入/退出系统提示</div>
-        <div class="log-item">✅ 实时在线人数 + 在线成员列表</div>
-        <div class="log-item">✅ 每条消息显示时间</div>
-        <div class="log-item">✅ 禁止重复昵称，防刷屏</div>
-        <div class="log-item">✅ 修复无限重连、无限弹窗BUG</div>
-        <div class="log-item">✅ 回车快捷发送、清空记录</div>
-        <div class="log-item">✅ 连接状态实时显示</div>
-        <div class="log-item">✅ 新增首次打开更新日志弹窗</div>
-        <div class="log-item">✅ 新增可折叠历史更新日志记录</div>
-        <div class="log-item">✅ 新增【未连接也能看在线列表】功能</div>
+        <div class="log-title-wrap">
+            <span class="log-title">📝 本次更新</span>
+            <span class="log-date-small">2026-05-26</span>
+        </div>
+        <div class="log-item">✅ 未连接服务器也能查看在线列表/人数</div>
+        <div class="log-item">✅ 新增表情包面板，支持图文混发</div>
+        <div class="log-item">✅ 历史日志增加更新日期标注</div>
         <button class="log-close" onclick="closeLog()">我知道了</button>
     </div>
 </div>
@@ -107,7 +130,25 @@ button:disabled{opacity:0.5;cursor:not-allowed;}
     </div>
 
     <div class="send-area">
+        <div class="emoji-panel" id="emojiPanel">
+            <span class="emoji-item" onclick="insertEmoji('😀')">😀</span>
+            <span class="emoji-item" onclick="insertEmoji('😂')">😂</span>
+            <span class="emoji-item" onclick="insertEmoji('🥰')">🥰</span>
+            <span class="emoji-item" onclick="insertEmoji('😎')">😎</span>
+            <span class="emoji-item" onclick="insertEmoji('🤔')">🤔</span>
+            <span class="emoji-item" onclick="insertEmoji('😥')">😥</span>
+            <span class="emoji-item" onclick="insertEmoji('😡')">😡</span>
+            <span class="emoji-item" onclick="insertEmoji('👍')">👍</span>
+            <span class="emoji-item" onclick="insertEmoji('👎')">👎</span>
+            <span class="emoji-item" onclick="insertEmoji('👏')">👏</span>
+            <span class="emoji-item" onclick="insertEmoji('🎉')">🎉</span>
+            <span class="emoji-item" onclick="insertEmoji('❤️')">❤️</span>
+            <span class="emoji-item" onclick="insertEmoji('🔥')">🔥</span>
+            <span class="emoji-item" onclick="insertEmoji('💯')">💯</span>
+            <span class="emoji-item" onclick="insertEmoji('🙌')">🙌</span>
+        </div>
         <input type="text" id="msg" placeholder="输入消息内容，最多120字" maxlength="120" onkeydown="enterSend(event)">
+        <button class="emoji-btn" onclick="toggleEmoji()">表情</button>
         <button class="send-btn" onclick="send()">发送</button>
     </div>
 
@@ -117,33 +158,31 @@ button:disabled{opacity:0.5;cursor:not-allowed;}
             <span class="arrow">▼</span>
         </div>
         <div class="history-content" id="historyContent">
-            <div class="log-item"><strong>V2.0（当前最新）</strong></div>
-            <div class="history-item">• 优化UI界面，左右气泡聊天</div>
-            <div class="history-item">• 加入/退出系统提示</div>
-            <div class="history-item">• 实时在线人数 + 在线成员列表</div>
-            <div class="history-item">• 每条消息显示时间</div>
-            <div class="history-item">• 禁止重复昵称，防刷屏</div>
-            <div class="history-item">• 修复无限重连BUG</div>
-            <div class="history-item">• 回车快捷发送、清空记录</div>
-            <div class="history-item">• 新增更新日志弹窗</div>
-            <div class="history-item">• 新增可折叠历史日志</div>
-            <div class="history-item">• 新增【未连接也能看在线列表】功能</div>
+            <div class="log-date">2026-05-26（本次更新）</div>
+            <div class="history-item">• 未连接服务器也能查看在线列表/人数</div>
+            <div class="history-item">• 新增表情包选择面板，支持表情+文字混发</div>
+            <div class="history-item">• 历史日志新增更新日期标注</div>
             <br>
-            <div class="log-item"><strong>V1.0</strong></div>
-            <div class="history-item">• 基础聊天功能</div>
-            <div class="history-item">• 连接/退出功能</div>
-            <div class="history-item">• 锁定昵称功能</div>
-            <div class="history-item">• 基础UI界面</div>
+            <div class="log-date">2026-05-25</div>
+            <div class="history-item">• 修复服务端开机虚假在线人员BUG</div>
+            <div class="history-item">• 修复在线成员列表人员进出不刷新问题</div>
+            <div class="history-item">• 新增开机更新弹窗 + 可折叠历史日志</div>
+            <div class="history-item">• 修复无限重连、重复昵称刷屏问题</div>
+            <div class="history-item">• 左右气泡聊天样式、消息附带时间戳</div>
+            <div class="history-item">• 新人上线/下线系统提示、回车快捷发送</div>
+            <div class="history-item">• 清空聊天记录、连接状态实时展示</div>
+            <br>
+            <div class="log-date">初始版本 V1.0</div>
+            <div class="history-item">• 基础聊天、连接、退出功能</div>
+            <div class="history-item">• 基础界面与昵称锁定功能</div>
         </div>
     </div>
 </div>
 
 <script>
 let ws, isConnected = false, myName = "";
-// 新增：后台轻量连接，专门用来接收在线列表
 let watcherWs;
 
-// 页面加载时，就建立后台连接
 window.onload = function() {
     initWatcher();
 }
@@ -167,9 +206,20 @@ function initWatcher() {
     };
 
     watcherWs.onclose = function() {
-        // 断开后5秒重试，保证一直能看列表
         setTimeout(initWatcher, 5000);
     };
+}
+
+function toggleEmoji(){
+    const panel = document.getElementById("emojiPanel");
+    panel.classList.toggle("show");
+}
+
+function insertEmoji(emoji){
+    const input = document.getElementById("msg");
+    input.value += emoji;
+    document.getElementById("emojiPanel").classList.remove("show");
+    input.focus();
 }
 
 function closeLog(){
