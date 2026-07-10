@@ -274,7 +274,7 @@
         }
 
 
-
+        /* 
         .video-card video {
 
             width: 100%;
@@ -285,9 +285,36 @@
 
             display: block;
 
+        } */
+
+
+
+        .video-card video {
+            width: 100%;
+            aspect-ratio: 9/16;
+            object-fit: contain;
+            /* 把cover换成contain，全屏不会裁切拉伸 */
+            display: block;
+            max-height: 100vh;
         }
 
+        /* 全屏播放时强制保持9:16比例，黑边留白不拉伸 */
+        .video-card video:fullscreen {
+            object-fit: contain;
+            width: auto;
+            height: 100vh;
+            margin: 0 auto;
+            background: #000;
+        }
 
+        /* 兼容webkit内核手机浏览器（Chrome/微信内置浏览器） */
+        .video-card video:-webkit-full-screen {
+            object-fit: contain;
+            width: auto;
+            height: 100vh;
+            margin: 0 auto;
+            background: #000;
+        }
 
 
 
@@ -589,10 +616,10 @@
 
             <p class="desc">
 
-               了解平台规则与特性，打造品牌核心产品，
-               将产品的功能与效果充分的呈现于视频中，
-               精准定位目标受众，有效吸引客户关注，
-               为直播间引入大量流量，最大化直播间曝光量。
+                了解平台规则与特性，打造品牌核心产品，
+                将产品的功能与效果充分的呈现于视频中，
+                精准定位目标受众，有效吸引客户关注，
+                为直播间引入大量流量，最大化直播间曝光量。
 
             </p>
 
@@ -610,14 +637,14 @@
 
                 <div class="video-card">
                     <video controls>
-                        <source src="videos/edit02.mp4">
+                        <source src="">
                     </video>
                 </div>
 
 
                 <div class="video-card">
                     <video controls>
-                        <source src="videos/edit03.mp4">
+                        <source src="">
                     </video>
                 </div>
 
@@ -654,21 +681,21 @@
 
                 <div class="video-card">
                     <video controls>
-                        <source src="videos/shoot01.mp4">
+                        <source src="">
                     </video>
                 </div>
 
 
                 <div class="video-card">
                     <video controls>
-                        <source src="videos/shoot02.mp4">
+                        <source src="">
                     </video>
                 </div>
 
 
                 <div class="video-card">
                     <video controls>
-                        <source src="videos/shoot03.mp4">
+                        <source src="">
                     </video>
                 </div>
 
