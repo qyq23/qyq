@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>个人作品集</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            background: #fff;
+            color: #1d1d1f;
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "SF Pro Display",
+                "Helvetica Neue",
+                Arial,
+                sans-serif;
+
+        }
+
+
+        /* 导航 */
+
+        header {
+
+            position: fixed;
+
+            top: 0;
+
+            width: 100%;
+
+            height: 64px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 0 6%;
+
+            background: rgba(255, 255, 255, .8);
+
+            backdrop-filter: blur(15px);
+
+            z-index: 99;
+
+        }
+
+
+        .logo {
+
+            font-size: 18px;
+
+            font-weight: 600;
+
+        }
+
+
+        nav {
+
+            display: flex;
+
+            gap: 30px;
+
+        }
+
+
+        nav a {
+
+            text-decoration: none;
+
+            color: #555;
+
+            font-size: 14px;
+
+        }
+
+
+
+        /* 首页 */
+
+
+        .hero {
+
+            padding-top: 160px;
+
+            text-align: center;
+
+            min-height: auto;
+
+        }
+
+
+        .hero h1 {
+
+            font-size: 44px;
+
+            font-weight: 600;
+
+            letter-spacing: -1px;
+
+        }
+
+
+        .hero p {
+
+            margin-top: 20px;
+
+            font-size: 18px;
+
+            line-height: 1.8;
+
+            color: #666;
+
+        }
+
+
+
+        .hero-video {
+
+            width: 230px;
+
+            margin: 60px auto 0;
+
+            border-radius: 28px;
+
+            overflow: hidden;
+
+            box-shadow:
+
+                0 20px 50px rgba(0, 0, 0, .12);
+
+        }
+
+
+
+        .hero-video video {
+
+            width: 100%;
+
+            aspect-ratio: 9/16;
+
+            object-fit: cover;
+
+            display: block;
+
+        }
+
+
+
+        /* 关于 */
+
+        .about {
+
+            max-width: 850px;
+
+            margin: auto;
+
+            padding: 40px 30px;
+
+        }
+
+
+        .about h2 {
+
+            font-size: 38px;
+
+            margin-bottom: 30px;
+
+            font-weight: 600;
+
+        }
+
+
+        .about p {
+
+            font-size: 18px;
+
+            color: #666;
+
+            line-height: 2;
+
+        }
+
+
+
+
+
+        /* 作品 */
+
+        .works {
+
+            padding: 80px 6%;
+
+        }
+
+
+        .work-section {
+
+            margin-bottom: 120px;
+
+        }
+
+
+
+        .work-section h2 {
+
+            font-size: 40px;
+
+            font-weight: 600;
+
+        }
+
+
+        .desc {
+
+            margin-top: 15px;
+
+            margin-bottom: 50px;
+
+            color: #777;
+
+            font-size: 17px;
+
+            line-height: 1.8;
+
+            max-width: 550px;
+
+        }
+
+
+
+
+        .video-grid {
+
+            display: grid;
+
+            grid-template-columns:
+
+                repeat(3, 1fr);
+
+            gap: 30px;
+
+        }
+
+
+
+        .video-card {
+
+            border-radius: 22px;
+
+            overflow: hidden;
+
+            background: #f5f5f7;
+
+            box-shadow:
+
+                0 15px 40px rgba(0, 0, 0, .08);
+
+        }
+
+
+
+        .video-card video {
+
+            width: 100%;
+
+            aspect-ratio: 9/16;
+
+            object-fit: cover;
+
+            display: block;
+
+        }
+
+
+
+
+
+        /* 联系 */
+
+
+        .contact {
+
+            background: #f5f5f7;
+
+            text-align: center;
+
+            padding: 100px 20px;
+
+        }
+
+
+        .contact h2 {
+
+            font-size: 42px;
+
+        }
+
+
+        .contact p {
+
+            margin-top: 20px;
+
+            color: #666;
+
+        }
+
+
+
+
+
+        /* 动画 */
+
+        .fade {
+
+            opacity: 0;
+
+            transform: translateY(30px);
+
+            transition: .8s;
+
+        }
+
+
+        .fade.show {
+
+            opacity: 1;
+
+            transform: none;
+
+        }
+
+
+
+
+
+        /* 手机 */
+
+
+        @media(max-width:768px) {
+
+
+            header {
+
+                padding: 0 20px;
+
+            }
+
+
+            nav {
+
+                gap: 15px;
+
+            }
+
+
+            nav a {
+
+                font-size: 12px;
+
+            }
+
+
+
+            .hero {
+
+                padding-top: 120px;
+
+            }
+
+
+
+            .hero h1 {
+
+                font-size: 32px;
+
+            }
+
+
+            .hero p {
+
+                font-size: 15px;
+
+            }
+
+
+            .hero-video {
+
+                width: 190px;
+
+            }
+
+
+
+
+            .about {
+
+                padding: 80px 25px;
+
+            }
+
+
+            .about h2 {
+
+                font-size: 30px;
+
+            }
+
+
+            .about p {
+
+                font-size: 16px;
+
+            }
+
+
+
+
+            .works {
+
+                padding: 60px 20px;
+
+            }
+
+
+
+            .work-section h2 {
+
+                font-size: 30px;
+
+            }
+
+
+            .desc {
+
+                font-size: 15px;
+
+                margin-bottom: 35px;
+
+            }
+
+
+
+            /* 手机两列视频 */
+
+            .video-grid {
+
+                grid-template-columns:
+
+                    repeat(2, 1fr);
+
+                gap: 15px;
+
+            }
+
+
+            .video-card {
+
+                border-radius: 16px;
+
+            }
+
+
+
+            .contact h2 {
+
+                font-size: 32px;
+
+            }
+
+
+
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+
+    <header>
+
+        <div class="logo">
+            个人作品
+        </div>
+
+
+        <nav>
+
+            <a href="#about">关于</a>
+
+            <a href="#works">作品</a>
+
+            <a href="#contact">联系</a>
+
+        </nav>
+
+    </header>
+
+
+
+
+
+    <section class="hero">
+
+
+        <h1>
+            你好，我是于龙龙
+        </h1>
+
+
+        <p>
+
+            视频创作者 / 摄影剪辑师
+
+            <br>
+
+            专注于视频剪辑、拍摄与视觉表达。
+
+        </p>
+
+
+
+
+
+
+    </section>
+
+
+
+
+
+
+
+    <section class="about fade" id="about">
+
+
+        <h2>
+            关于我
+        </h2>
+
+
+        <p>
+
+            我通过影像记录故事，
+            探索画面、节奏与情绪之间的联系。
+
+            专注于短视频创作、商业影像和视觉设计。
+
+        </p>
+
+
+    </section>
+
+
+
+
+
+
+
+    <section class="works" id="works">
+
+
+
+        <div class="work-section fade">
+
+
+            <h2>
+                剪辑作品
+            </h2>
+
+
+            <p class="desc">
+
+               了解平台规则与特性，打造品牌核心产品，
+               将产品的功能与效果充分的呈现于视频中，
+               精准定位目标受众，有效吸引客户关注，
+               为直播间引入大量流量，最大化直播间曝光量。
+
+            </p>
+
+
+
+            <div class="video-grid">
+
+
+                <div class="video-card">
+                    <video controls>
+                        <source src="videos/edit01.mp4">
+                    </video>
+                </div>
+
+
+                <div class="video-card">
+                    <video controls>
+                        <source src="videos/edit02.mp4">
+                    </video>
+                </div>
+
+
+                <div class="video-card">
+                    <video controls>
+                        <source src="videos/edit03.mp4">
+                    </video>
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+        <div class="work-section fade">
+
+
+            <h2>
+                拍摄作品
+            </h2>
+
+
+            <p class="desc">
+
+                从产品核心卖点，用拍摄手法与场景布置突出产品优势，
+                关注不同平台热点，从多维度优化视频内容，提升产品吸引力。
+
+            </p>
+
+
+
+            <div class="video-grid">
+
+
+                <div class="video-card">
+                    <video controls>
+                        <source src="videos/shoot01.mp4">
+                    </video>
+                </div>
+
+
+                <div class="video-card">
+                    <video controls>
+                        <source src="videos/shoot02.mp4">
+                    </video>
+                </div>
+
+
+                <div class="video-card">
+                    <video controls>
+                        <source src="videos/shoot03.mp4">
+                    </video>
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+    </section>
+
+
+
+
+
+
+
+    <section class="contact fade" id="contact">
+
+
+        <h2>
+            一起创作
+        </h2>
+
+
+        <p>
+            Email：your@email.com
+        </p>
+
+
+    </section>
+
+
+
+
+
+
+
+    <script>
+
+
+        const observer = new IntersectionObserver(
+
+            (entries) => {
+
+                entries.forEach(e => {
+
+                    if (e.isIntersecting) {
+
+                        e.target.classList.add("show");
+
+                    }
+
+                });
+
+            }
+
+        );
+
+
+        document.querySelectorAll(".fade")
+
+            .forEach(el => observer.observe(el));
+
+
+    </script>
+
+
+
+</body>
+
+</html>
